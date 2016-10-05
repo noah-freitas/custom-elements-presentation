@@ -1,0 +1,21 @@
+{
+  "name": "custom-elements-presentation",
+  "authors": [
+    "Noah Freitas <noah.j.freitas@gmail.com>"
+  ],
+  "description": "",
+  "main": "index.html",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "custom-elements.noah-freitas.com",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "reveal.js": "^3.3.0"
+  }
+}

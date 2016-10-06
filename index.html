@@ -25,9 +25,12 @@
                 <section>
                     <h1>Custom Element Registry</h1>
                     <ul>
-                        <li>define :: String, Function, { extends :: String } -> undefined</li>
-                        <li>get :: String -> Function || undefined</li>
-                        <li>whenDefined :: String -> Promise&lt;undefined&gt;</li>
+                        <li>define :: String, Function, { extends :: String } -> undefined<br>
+                            define(name, classExpression, optionsObject)</li>
+                        <li>get :: String -> Function || undefined<br>
+                            get(name)</li>
+                        <li>whenDefined :: String -> Promise&lt;undefined&gt;<br>
+                            whenDefined(name)</li>
                     </ul>
                 </section>
                 <section>
@@ -37,6 +40,7 @@
                         <li>Contain a hyphen</li>
                         <li>No upper case letters</li>
                         <li>Restrictions for existing MathML and SVG names</li>
+                        <li>Over 900K valid unicode codepoints</li>
                     </ul>
                 </section>
                 <section>
@@ -50,9 +54,34 @@
                         <li>Autonomous custom elements</li>
                         <li>Customized built-in elements</li>
                     </ul>
+                    <p>Determined by optional third argument to <code>customElements.define</code>.</p>
                 </section>
                 <section>
-                    <p>Difference is determined by the presence (built-in) or absence (custom) of optional <code>extends</code> argument to <code>customElements.define</code>.</p>
+                    <h1>Lifecycle Callbacks</h1>
+                    <ul>
+                        <li>constructor</li>
+                        <li>connectedCallback</li>
+                        <li>disconnectedCallback</li>
+                        <li>adoptedCallback</li>
+                        <li>attributeChangedCallback</li>
+                    </ul>
+                </section>
+                <section>
+                    <h1>Upgrading</h1>
+                </section>
+                <section>
+                    <h1>Connection &amp; Adoption</h1>
+                    <dl>
+                        <dt>Connected</dt> <dd>Element's root is a document.</dd>
+                        <dt>Adopted</dt> <dd>Connected to a new document.</dd>
+                    </dl>
+                </section>
+                <section>
+                    <h1>Attribute Changes</h1>
+                    <ul>
+                        <li><code>static get observedAttributes() { return ['data-title']; }</code></li>
+                        <li><code>attributeChangedCallback(name, oldValue, newValue)</code></li>
+                    </ul>
                 </section>
             </div>
         </div>

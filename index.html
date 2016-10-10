@@ -5,10 +5,18 @@
         <title>Custom Elements Presentation</title>
         <link rel="stylesheet" type="text/css" href="bower_components/reveal.js/css/reveal.css">
         <link rel="stylesheet" type="text/css" href="bower_components/reveal.js/css/theme/solarized.css">
+        <style>
+            h1 code, h3 code {
+                text-transform: none;
+            }
+        </style>
     </head>
     <body>
         <div class="reveal">
             <div class="slides">
+                <section>
+                    <h1>Custom Elements</h1>
+                </section>
                 <section>
                     <h1>Significance</h1>
                     <blockquote>
@@ -23,10 +31,23 @@
                     </ul>
                 </section>
                 <section>
-                    <h1>Custom Element Registry</h1>
+                    <h1>Registry</h1>
+                    <ul>
+                        <li>Each <code>window</code> has a registry.</li>
+                        <li>
+                            Two maps
+                            <ol>
+                                <li>Element names -> Constructors</li>
+                                <li>Element names -> Definition promises</li>
+                            </ol>
+                        </li>
+                    </ul>
+                </section>
+                <section>
+                    <h3><code>CustomElementRegistry</code></h3>
                     <ul>
                         <li>define :: String, Function, { extends :: String } -> undefined<br>
-                            define(name, classExpression, optionsObject)</li>
+                            define(name, constructor, optionsObject)</li>
                         <li>get :: String -> Function || undefined<br>
                             get(name)</li>
                         <li>whenDefined :: String -> Promise&lt;undefined&gt;<br>
@@ -57,17 +78,74 @@
                     <p>Determined by optional third argument to <code>customElements.define</code>.</p>
                 </section>
                 <section>
-                    <h1>Lifecycle Callbacks</h1>
-                    <ul>
-                        <li>constructor</li>
-                        <li>connectedCallback</li>
-                        <li>disconnectedCallback</li>
-                        <li>adoptedCallback</li>
-                        <li>attributeChangedCallback</li>
-                    </ul>
+                    <h1>Example Class</h1>
+                    <section>
+                        <pre><code>
+class MyModal extends HTMLElement {
+    static get observedAttributes() {
+        return ['data-message'];
+    }
+
+    constructor() {
+        super();
+
+        this.appendChild(document.createElement('dialog'));
+    }
+                        </code></pre>
+                    </section>
+                    <section>
+                        <pre><code>
+    attributeChangedCallback(attrName, oldVal, newVal) {
+        switch (attrName) {
+            case 'data-message' :
+                this.querySelector('dialog').textContent = newVal;
+                break;
+        }
+    }
+
+    disconnectedCallback() {
+        if (this.isShowing) this.toggle();
+    }
+                        </code></pre>
+                    </section>
+                    <section>
+                        <pre><code>
+    get isShowing() {
+        return this.querySelector('dialog').open;
+    }
+
+    toggle() {
+        let dialog = this.querySelector('dialog');
+        dialog[this.isShowing ? 'hide' : 'showModal']();
+
+        this.dispatchEvent(new CustomEvent('modal-toggled', {
+            bubbles : true,
+            detail  : this.isShowing
+        }));
+    }
+}
+                        </code></pre>
+                    </section>
                 </section>
                 <section>
-                    <h1>Upgrading</h1>
+                    <h1>Reactions</h1>
+                    <table>
+                        <tr>
+                            <th>Element Upgraded</th><td><code>constructor</code></td>
+                        </tr>
+                        <tr>
+                            <th>Element Connected</th><td><code>connectedCallback</code></td>
+                        </tr>
+                        <tr>
+                            <th>Element Disconnected</th><td><code>disconnectedCallback</code></td>
+                        </tr>
+                        <tr>
+                            <th>Element Adopted</th><td><code>adoptedCallback</code></td>
+                        </tr>
+                        <tr>
+                            <th>Attribute Changed, Added, or Removed</th><td><code>attributeChangedCallback</code></td>
+                        </tr>
+                    </table>
                 </section>
                 <section>
                     <h1>Connection &amp; Adoption</h1>
@@ -82,6 +160,17 @@
                         <li><code>static get observedAttributes() { return ['data-title']; }</code></li>
                         <li><code>attributeChangedCallback(name, oldValue, newValue)</code></li>
                     </ul>
+                </section>
+                <section>
+                    <h1><code>:defined</code></h1>
+                </section>
+                <section>
+                    <h1>Upgrade Process</h1>
+                    <ol>
+                        <li>Construction</li>
+                        <li>Attribute Changes</li>
+                        <li>Connection</li>
+                    </ol>
                 </section>
             </div>
         </div>

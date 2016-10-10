@@ -18,6 +18,10 @@
                     <h1>Custom Elements</h1>
                 </section>
                 <section>
+                    <p>A native specification of things you've already seen in Angular, React, Polymer, and other JS frameworks.</p>
+                    <p>But without data-binding or templating.</p>
+                </section>
+                <section>
                     <h1>Significance</h1>
                     <blockquote>
                         <p>Custom elements are part of a larger effort to "rationalise the platform", by explaining existing platform features (like the elements of HTML) in terms of lower-level author-exposed extensibility points (like custom element definition).</p>
@@ -33,7 +37,7 @@
                 <section>
                     <h1>Registry</h1>
                     <ul>
-                        <li>Each <code>window</code> has a registry.</li>
+                        <li>Each <code>window</code> has a registry (<code>window.customElements</code>).</li>
                         <li>
                             Two maps
                             <ol>
@@ -70,7 +74,7 @@
                     </blockquote>
                 </section>
                 <section>
-                    <h1>2 Types of Custom Elements</h1>
+                    <h1>2 Types</h1>
                     <ul>
                         <li>Autonomous custom elements</li>
                         <li>Customized built-in elements</li>
@@ -78,10 +82,15 @@
                     <p>Determined by optional third argument to <code>customElements.define</code>.</p>
                 </section>
                 <section>
-                    <h1>Example Class</h1>
+                    <h1>Autonomous Custom Elements</h1>
+                    <ul>
+                        <li>Inherit from <code>HTMLElement</code></li>
+                        <li>Provide customized behavior through a user-provided <code>constructor</code> and prototype methods, including lifecycle callbacks.</li>
+                    </ul>
+                </section>
+                <section>
                     <section>
-                        <pre><code>
-class MyModal extends HTMLElement {
+                        <pre><code>customElements.define('my-modal', class MyModal extends HTMLElement {
     static get observedAttributes() {
         return ['data-message'];
     }
@@ -90,12 +99,10 @@ class MyModal extends HTMLElement {
         super();
 
         this.appendChild(document.createElement('dialog'));
-    }
-                        </code></pre>
+    }</code></pre>
                     </section>
                     <section>
-                        <pre><code>
-    attributeChangedCallback(attrName, oldVal, newVal) {
+                        <pre><code>    attributeChangedCallback(attrName, oldVal, newVal) {
         switch (attrName) {
             case 'data-message' :
                 this.querySelector('dialog').textContent = newVal;
@@ -105,12 +112,10 @@ class MyModal extends HTMLElement {
 
     disconnectedCallback() {
         if (this.isShowing) this.toggle();
-    }
-                        </code></pre>
+    }</code></pre>
                     </section>
                     <section>
-                        <pre><code>
-    get isShowing() {
+                        <pre><code>    get isShowing() {
         return this.querySelector('dialog').open;
     }
 
@@ -123,9 +128,14 @@ class MyModal extends HTMLElement {
             detail  : this.isShowing
         }));
     }
-}
-                        </code></pre>
+});</code></pre>
                     </section>
+                </section>
+                <section>
+                    <pre><code>&lt;my-modal data-message="Testing 1, 2, 3">&lt;/my-modal></code></pre>
+                    <pre><code>let modal = document.querySelector('my-modal');
+modal.dataset.message += ', 4, 5.';
+modal.toggle();</code></pre>
                 </section>
                 <section>
                     <h1>Reactions</h1>
@@ -162,7 +172,26 @@ class MyModal extends HTMLElement {
                     </ul>
                 </section>
                 <section>
+                    <h1>Custom Element State</h1>
+                    <ul>
+                        <li><code>"uncustomized"</code></li>
+                        <li><code>"custom"</code></li>
+                        <li><code>"undefined"</code></li>
+                        <li><code>"failed"</code></li>
+                    </ul>
+                </section>
+                <section>
                     <h1><code>:defined</code></h1>
+                    <pre><code>let undefinedEls = [...document.querySelectorAll(':not(:defined)')],
+    definitionPromises = undefinedEls.map(el =>
+        customElements.whenDefined(el.localName)
+    );
+
+undefinedEls.forEach(el => el.hidden = true);
+Promise.all(definitionPromises).then(() =>
+    undefinedEls.forEach(el => el.hidden = false)
+);
+</code></pre>
                 </section>
                 <section>
                     <h1>Upgrade Process</h1>
@@ -171,6 +200,32 @@ class MyModal extends HTMLElement {
                         <li>Attribute Changes</li>
                         <li>Connection</li>
                     </ol>
+                </section>
+                <section>
+                    <h1><code>constructor</code></h1>
+                    <ul>
+                        <li><code>super();</code> call first</li>
+                        <li>No returning non-<code>this</code> objects</li>
+                        <li>No <code>document.write()</code> or <code>.open()</code></li>
+                        <li>No looking at attributes or children</li>
+                        <li>No adding of attributes or children</li>
+                        <li>Defer work to <code>connectedCallback</code></li>
+                        <li>Setup initial state, event listeners, and shadow DOM</li>
+                    </ul>
+                </section>
+                <section>
+                    <h1>Customized Built-in Elements</h1>
+                    <p>Because the platform's still not rational.</p>
+                </section>
+                <section>
+                    <pre><code>customElements.define(
+    'my-button',
+    class MyButton extends HTMLButtonElement {},
+    { extends : 'button' }
+);</code></pre>
+                </section>
+                <section>
+                    <pre><code>&lt;button is="my-button">Click Here&lt;/button></code></pre>
                 </section>
             </div>
         </div>
